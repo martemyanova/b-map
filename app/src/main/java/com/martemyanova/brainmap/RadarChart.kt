@@ -3,6 +3,7 @@ package com.martemyanova.brainmap
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
 import android.text.Layout
@@ -19,6 +20,7 @@ class RadarChart : View {
     private val outerCircleRadius = 100F.dpToPx()
     private val numberOfCircles = 10
     private val numberOfAxis = 6
+    private val strokeWidth = 3F
     private val axisHeight = outerCircleRadius + 9F.dpToPx()
     private val axisCircleRadius = (11F / 2).dpToPx()
     private val paint = Paint()
@@ -26,8 +28,9 @@ class RadarChart : View {
     private val textSize = 14F.spToPx()
     private val textHeight = 10F.dpToPx()
     private val sideBorder = 10F.dpToPx()
+    private val polygonAlpha = 200
 
-    private val backgroundColor by lazy { ContextCompat.getColor(context, R.color.colorGrey) }
+    //private val backgroundColor by lazy { ContextCompat.getColor(context, R.color.colorGrey) }
     private val greyColor by lazy { ContextCompat.getColor(context, R.color.colorLightGrey) }
     private val whiteColor by lazy { ContextCompat.getColor(context, R.color.colorWhite) }
     private val blueColor by lazy { ContextCompat.getColor(context, R.color.colorBlue) }
@@ -40,9 +43,10 @@ class RadarChart : View {
             super(context, attrs, defStyleAttr)
 
     init {
-        setBackgroundColor(backgroundColor)
+        //setBackgroundColor(backgroundColor)
 
         paint.isAntiAlias = true
+        paint.strokeWidth = strokeWidth
         textPaint.color = whiteColor
         textPaint.textSize = textSize
     }
@@ -53,6 +57,7 @@ class RadarChart : View {
         c.translate(width/2f, height/2f);
         drawCircles(c)
         drawAxis(c)
+        drawPolygons(c)
     }
 
     private fun drawCircles(canvas: Canvas) {
@@ -119,6 +124,29 @@ class RadarChart : View {
         textPaint.typeface = typeface
         labelLayout.draw(c)
         c.restore()
+    }
+
+    private fun drawPolygons(c: Canvas) {
+        for (i in 0..numberOfAxis) {
+            paint.color = whiteColor
+            paint.style = Paint.Style.FILL
+            paint.alpha = polygonAlpha
+
+            val x1 = getXUnitVector(i) * (i + 1) * 30
+            val y1 = getYUnitVector(i) * (i + 1) * 30
+            val next = if (i == numberOfAxis) 0 else i + 1
+            val x2 = getXUnitVector(next) * (next + 1) * 30
+            val y2 = getYUnitVector(next) * (next + 1) * 30
+
+            val path = Path().apply {
+                reset()
+                moveTo(0F, 0F)
+                lineTo(x1, y1)
+                lineTo(x2,y2)
+                lineTo(0F, 0F)
+            }
+            c.drawPath(path, paint)
+        }
     }
 
     private fun getAngle(position: Int): Double =
