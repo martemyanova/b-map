@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">BrainMap</string>
+
+    <string name="caption">YOUR PEAK BRAIN MAP&#8482;</string>
+    <string name="text">Review and compare how you\'re\n performing in each brain skill category</string>
+    <string name="btn_you">You</string>
+    <string name="btn_age_group">Age Group</string>
+    <string name="btn_profession">Profession</string>
 </resources>

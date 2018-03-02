@@ -1,30 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.martemyanova.brainmap.MainActivity"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    android:gravity="center_horizontal">
 
     <TextView
+        android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/app_name"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="30dp"
+        android:textSize="14sp"
+        android:text="@string/caption"
+        android:letterSpacing="0.3"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/descriptionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:lineSpacingExtra="8sp"
+        android:text="@string/text"
+        android:gravity="center"/>
+
+    <RadioGroup
+        android:id="@+id/chartMode"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/btn1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@drawable/tab_text_selector"
+            android:text="@string/btn_you"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@drawable/tab_selector"
+            android:button="@null"/>
+        <RadioButton
+            android:id="@+id/btn2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@drawable/tab_text_selector"
+            android:text="@string/btn_age_group"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@drawable/tab_selector"
+            android:button="@null"/>
+        <RadioButton
+            android:id="@+id/btn3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@drawable/tab_text_selector"
+            android:text="@string/btn_profession"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@drawable/tab_selector"
+            android:button="@null"/>
+    </RadioGroup>
 
     <com.martemyanova.brainmap.RadarChart
         android:id="@+id/radarChart"
         android:layout_width="323dp"
         android:layout_height="323dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.71000004" />
+        android:layout_marginTop="20dp"
+        android:gravity="center" />
     
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

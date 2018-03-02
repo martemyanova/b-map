@@ -25,7 +25,7 @@ class RadarChart : View {
     private val textPaint = TextPaint()
     private val textSize = 14F.spToPx()
     private val textHeight = 10F.dpToPx()
-    private val sideBorder = 10F.dpToPx()
+    private val sideBorder = 50F.dpToPx()
     private val polygonAlpha = 200
 
     private val lightGreyColor by lazy { ContextCompat.getColor(context, R.color.colorLightGrey) }
