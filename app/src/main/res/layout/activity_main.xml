@@ -18,6 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.martemyanova.brainmap.RadarChart
+        android:id="@+id/radarChart"
         android:layout_width="323dp"
         android:layout_height="323dp"
         app:layout_constraintBottom_toBottomOf="parent"
