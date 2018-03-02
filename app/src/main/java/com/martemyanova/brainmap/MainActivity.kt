@@ -1,11 +1,14 @@
 package com.martemyanova.brainmap
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Typeface
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.RadioButton
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import com.martemyanova.brainmap.BrainMapViewModel.ChartMode.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,7 +36,41 @@ class MainActivity : AppCompatActivity() {
         btn2.typeface = lightTypeface
         btn3.typeface = lightTypeface
 
-        radarChart.setData(brainMapViewModel.categories,
-                brainMapViewModel.yourScore, brainMapViewModel.ageGroupScore)
+        subscribeToDataChanges()
+        chartMode.setOnCheckedChangeListener { _, checkedId ->
+            val radio: RadioButton = findViewById(checkedId)
+            if (!radio.isChecked) return@setOnCheckedChangeListener
+
+            when (checkedId) {
+                R.id.btn1 ->
+                    brainMapViewModel.changeChartMode(YOU)
+                R.id.btn2 ->
+                    brainMapViewModel.changeChartMode(AGE_GROUP)
+                R.id.btn3 ->
+                    brainMapViewModel.changeChartMode(PROFESSION)
+            }
+        }
+    }
+
+    private fun subscribeToDataChanges() {
+        brainMapViewModel.chartMode.observe(this, Observer { mode ->
+            when (mode) {
+                YOU -> {
+                    chartMode.check(R.id.btn1)
+                    radarChart.setData(brainMapViewModel.categories,
+                            brainMapViewModel.yourScore)
+                }
+                AGE_GROUP -> {
+                    chartMode.check(R.id.btn2)
+                    radarChart.setData(brainMapViewModel.categories,
+                            brainMapViewModel.yourScore, brainMapViewModel.ageGroupScore)
+                }
+                PROFESSION -> {
+                    chartMode.check(R.id.btn3)
+                    radarChart.setData(brainMapViewModel.categories,
+                            brainMapViewModel.yourScore, brainMapViewModel.professionScore)
+                }
+            }
+        })
     }
 }

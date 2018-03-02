@@ -17,7 +17,6 @@ import java.util.*
 class RadarChart : View {
     private val outerCircleRadius = 100F.dpToPx()
     private val numberOfCircles = 10
-    private val numberOfAxis = 6
     private val strokeWidth = 3F
     private val axisHeight = outerCircleRadius + 9F.dpToPx()
     private val axisCircleRadius = (11F / 2).dpToPx()
@@ -39,6 +38,8 @@ class RadarChart : View {
     private val palette: Array<Int>
 
     private var axisLabels = arrayOf<String>()
+    private val numberOfAxis
+        get() = axisLabels.size
     private var data1 = arrayOf<Int>()
     private var data2 = arrayOf<Int>()
 
@@ -61,12 +62,15 @@ class RadarChart : View {
     fun setData(axisLabels: Array<String>, data1: Array<Int>) {
         this.axisLabels = axisLabels
         this.data1 = data1
+        this.data2 = arrayOf<Int>()
         invalidate()
     }
 
     fun setData(axisLabels: Array<String>, data1: Array<Int>, data2: Array<Int>) {
-        setData(axisLabels, data1)
+        this.axisLabels = axisLabels
+        this.data1 = data1
         this.data2 = data2
+        invalidate()
     }
 
     override fun onDraw(canvas: Canvas?) {
