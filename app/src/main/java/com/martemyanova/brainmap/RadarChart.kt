@@ -17,7 +17,8 @@ import java.util.*
 class RadarChart : View {
     private val outerCircleRadius = 100F.dpToPx()
     private val numberOfCircles = 10
-    private val strokeWidth = 3F
+    private val strokeWidth1 = 2F
+    private val strokeWidth2 = 3F
     private val axisHeight = outerCircleRadius + 9F.dpToPx()
     private val axisCircleRadius = (11F / 2).dpToPx()
     private val paint = Paint()
@@ -29,6 +30,7 @@ class RadarChart : View {
 
     private val lightGreyColor by lazy { ContextCompat.getColor(context, R.color.colorLightGrey) }
     private val whiteColor by lazy { ContextCompat.getColor(context, R.color.colorWhite) }
+    private val redColor by lazy { ContextCompat.getColor(context, R.color.colorRed) }
     private val peakBlueColor by lazy { ContextCompat.getColor(context, R.color.colorPeakBlue) }
     private val pinkColor by lazy { ContextCompat.getColor(context, R.color.colorPink) }
     private val greenColor by lazy { ContextCompat.getColor(context, R.color.colorGreen) }
@@ -52,7 +54,6 @@ class RadarChart : View {
 
     init {
         paint.isAntiAlias = true
-        paint.strokeWidth = strokeWidth
         textPaint.color = whiteColor
         textPaint.textSize = textSize
 
@@ -85,6 +86,7 @@ class RadarChart : View {
     private fun drawCircles(canvas: Canvas) {
         paint.color = whiteColor
         paint.style = Paint.Style.STROKE
+        paint.strokeWidth = strokeWidth1
 
         val h = outerCircleRadius / numberOfCircles
 
@@ -105,9 +107,11 @@ class RadarChart : View {
             val x = getXUnitVector(i)
             val y = getYUnitVector(i)
             paint.color = whiteColor
+            paint.strokeWidth = strokeWidth1
             c.drawLine(0F, 0F, r * x, r * y, paint);
 
             paint.color = getColor(i)
+            paint.strokeWidth = strokeWidth2
             c.drawCircle(circleH * x, circleH * y, axisCircleRadius, paint);
 
             if (data1.isNotEmpty())
@@ -155,7 +159,7 @@ class RadarChart : View {
         if (data1.isEmpty()) return
 
         if (data2.isNotEmpty()) {
-            paint.color = pinkColor
+            paint.color = redColor
             drawPolygon(c, data2)
         }
 
