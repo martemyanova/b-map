@@ -5,18 +5,27 @@ import android.arch.lifecycle.ViewModel
 
 class BrainMapViewModel: ViewModel() {
 
-    val categories = arrayOf("Peak Brain Score", "Memory", "Problem Solving",
-            "Language", "Mental Agility", "Focus")
+    private var categoriesNumber = BrainMapABTesting.instance.categoriesNumber
+    val categories
+        get() = arrayOf("Peak Brain Score", "Memory", "Problem Solving",
+                "Language", "Mental Agility", "Focus").copyOfRange(0, categoriesNumber)
 
-    val yourScore = arrayOf(876, 800, 600, 512, 924, 700)
-    val ageGroupScore = arrayOf(600, 898, 200, 700, 702, 910)
-    val professionScore = arrayOf(300, 1000, 300, 1000, 300, 1000)
+    private val yourScore = arrayOf(876, 800, 600, 512, 924, 700)
+    private val ageGroupScore = arrayOf(600, 898, 200, 700, 702, 910)
+    private val professionScore = arrayOf(1000, 150, 1000, 150, 1000, 150)
 
     enum class ChartMode {
         YOU, AGE_GROUP, PROFESSION
     }
-
     val chartMode: MutableLiveData<ChartMode> = MutableLiveData()
+
+    var mainShapeData = yourScore
+    val secondShapeData: Array<Int>
+        get() = when (chartMode.value) {
+            ChartMode.AGE_GROUP -> ageGroupScore
+            ChartMode.PROFESSION -> professionScore
+            else -> arrayOf<Int>()
+        }
 
     init {
         chartMode.value = ChartMode.YOU

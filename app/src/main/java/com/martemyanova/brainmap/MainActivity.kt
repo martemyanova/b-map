@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.RadioButton
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 import com.martemyanova.brainmap.BrainMapViewModel.ChartMode.*
 
 class MainActivity : AppCompatActivity() {
@@ -15,26 +14,19 @@ class MainActivity : AppCompatActivity() {
     private val brainMapViewModel by lazy {
         ViewModelProviders.of(this).get(BrainMapViewModel::class.java)
     }
-
-    private val lightTypeface by lazy {
-        Typeface.createFromAsset(assets,
-                String.format(Locale.US,"fonts/%s", "GothamSSm-Light.ttf"))
-    }
-
-    private val mediumTypeface by lazy {
-        Typeface.createFromAsset(assets,
-                String.format(Locale.US,"fonts/%s", "GothamSSm-Medium.ttf"))
-    }
+    private val lightTypeface by lazy { loadFont("GothamSSm-Light.ttf") }
+    private val mediumTypeface by lazy { loadFont("GothamSSm-Medium.ttf") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        titleText.typeface = Typeface.create(mediumTypeface, Typeface.BOLD)
-        descriptionText.typeface = lightTypeface
 
-        btn1.typeface = lightTypeface
-        btn2.typeface = lightTypeface
-        btn3.typeface = lightTypeface
+        // set custom fonts
+        titleText.typeface = mediumTypeface.setBold()
+        descriptionText.typeface = lightTypeface
+        btnYou.typeface = lightTypeface
+        btnAgeGroup.typeface = lightTypeface
+        btnProfession.typeface = lightTypeface
 
         subscribeToDataChanges()
         chartMode.setOnCheckedChangeListener { _, checkedId ->
@@ -42,11 +34,11 @@ class MainActivity : AppCompatActivity() {
             if (!radio.isChecked) return@setOnCheckedChangeListener
 
             when (checkedId) {
-                R.id.btn1 ->
+                R.id.btnYou ->
                     brainMapViewModel.changeChartMode(YOU)
-                R.id.btn2 ->
+                R.id.btnAgeGroup ->
                     brainMapViewModel.changeChartMode(AGE_GROUP)
-                R.id.btn3 ->
+                R.id.btnProfession ->
                     brainMapViewModel.changeChartMode(PROFESSION)
             }
         }
@@ -56,21 +48,23 @@ class MainActivity : AppCompatActivity() {
         brainMapViewModel.chartMode.observe(this, Observer { mode ->
             when (mode) {
                 YOU -> {
-                    chartMode.check(R.id.btn1)
-                    radarChart.setData(brainMapViewModel.categories,
-                            brainMapViewModel.yourScore)
+                    chartMode.check(R.id.btnYou)
                 }
                 AGE_GROUP -> {
-                    chartMode.check(R.id.btn2)
-                    radarChart.setData(brainMapViewModel.categories,
-                            brainMapViewModel.yourScore, brainMapViewModel.ageGroupScore)
+                    chartMode.check(R.id.btnAgeGroup)
                 }
                 PROFESSION -> {
-                    chartMode.check(R.id.btn3)
-                    radarChart.setData(brainMapViewModel.categories,
-                            brainMapViewModel.yourScore, brainMapViewModel.professionScore)
+                    chartMode.check(R.id.btnProfession)
                 }
+            }
+            brainMapViewModel.apply {
+                radarChart.setData(categories, mainShapeData, secondShapeData)
             }
         })
     }
+
+    private fun loadFont(fileName: String): Typeface =
+            Typeface.createFromAsset(this.assets,"fonts/$fileName")
+
+    private fun Typeface.setBold(): Typeface = Typeface.create(this, Typeface.BOLD)
 }
