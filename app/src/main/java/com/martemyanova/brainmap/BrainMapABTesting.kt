@@ -17,9 +17,10 @@ class BrainMapABTesting private constructor(){
         abTesting.setDefault(hashMapOf(
                 PARAM_CATEGORIES_NUMBER to defaultCategoriesNumber.toString()))
 
+        //doAsync
         abTesting.fetch { isSuccessful ->
             if (!isSuccessful) {
-                Log.e(TAG, "Failed to fetch AB test assignements. How to handle this depends on particular app's logic")
+                Log.e(TAG, "Failed to fetch AB test assignments. How to handle this depends on particular app's logic")
             }
         }
     }

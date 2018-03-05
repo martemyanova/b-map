@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:text="@string/caption"
         android:letterSpacing="0.3"
         android:gravity="center"/>
@@ -22,18 +22,18 @@
         android:id="@+id/descriptionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="14sp"
-        android:lineSpacingExtra="8sp"
+        android:layout_marginTop="6dp"
+        android:textSize="15sp"
+        android:lineSpacingExtra="6sp"
         android:text="@string/text"
         android:gravity="center"/>
 
     <RadioGroup
         android:id="@+id/chartMode"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="24dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:orientation="horizontal">
         <RadioButton
@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:textColor="@drawable/tab_text_selector"
             android:text="@string/btn_you"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:gravity="center"
             android:background="@drawable/tab_selector"
             android:button="@null"/>
@@ -54,7 +54,7 @@
             android:layout_weight="1"
             android:textColor="@drawable/tab_text_selector"
             android:text="@string/btn_age_group"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:gravity="center"
             android:background="@drawable/tab_selector"
             android:button="@null"/>
@@ -65,7 +65,7 @@
             android:layout_weight="1"
             android:textColor="@drawable/tab_text_selector"
             android:text="@string/btn_profession"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:gravity="center"
             android:background="@drawable/tab_selector"
             android:button="@null"/>
@@ -73,9 +73,11 @@
 
     <com.martemyanova.brainmap.RadarChart
         android:id="@+id/radarChart"
-        android:layout_width="323dp"
-        android:layout_height="323dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:gravity="center" />
     
 </LinearLayout>

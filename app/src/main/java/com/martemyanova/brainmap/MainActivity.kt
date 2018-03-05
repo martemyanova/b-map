@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         btnYou.typeface = lightTypeface
         btnAgeGroup.typeface = lightTypeface
         btnProfession.typeface = lightTypeface
+        radarChart.typeface = lightTypeface
 
         subscribeToDataChanges()
         chartMode.setOnCheckedChangeListener { _, checkedId ->
@@ -63,8 +64,4 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun loadFont(fileName: String): Typeface =
-            Typeface.createFromAsset(this.assets,"fonts/$fileName")
-
-    private fun Typeface.setBold(): Typeface = Typeface.create(this, Typeface.BOLD)
 }

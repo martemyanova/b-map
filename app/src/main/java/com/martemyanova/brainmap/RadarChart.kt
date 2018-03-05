@@ -12,21 +12,32 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
-import java.util.*
+import kotlin.math.roundToInt
 
 class RadarChart : View {
-    private val outerCircleRadius = 100F.dpToPx()
+    //private val outerCircleRadius = 110F.dpToPx()
     private val numberOfCircles = 10
     private val strokeWidth1 = 2F
     private val strokeWidth2 = 3F
-    private val axisHeight = outerCircleRadius + 9F.dpToPx()
+    //private val axisHeight = outerCircleRadius + 9F.dpToPx()
     private val axisCircleRadius = (11F / 2).dpToPx()
     private val paint = Paint()
     private val textPaint = TextPaint()
-    private val textSize = 14F.spToPx()
+    private val textSize = 15F.spToPx()
     private val textHeight = 10F.dpToPx()
     private val sideBorder = 50F.dpToPx()
-    private val polygonAlpha = 200
+    private val opaqueAlpha = 255
+    private val lineAlpha = (opaqueAlpha * 0.6).roundToInt()
+    private val textAlpha = (opaqueAlpha * 0.8).roundToInt()
+    private val polygonAlpha = (opaqueAlpha * 0.8).roundToInt()
+    private val units = 1000
+
+    private val Canvas.radius: Int
+        get() = this.height / 2
+    private val Canvas.outerCircleRadius: Float
+        get() = (this.radius * 0.60).toFloat()
+    private val Canvas.axisHeight: Float
+        get() = (this.outerCircleRadius + this.radius * 0.06).toFloat()
 
     private val lightGreyColor by lazy { ContextCompat.getColor(context, R.color.colorLightGrey) }
     private val whiteColor by lazy { ContextCompat.getColor(context, R.color.colorWhite) }
@@ -45,6 +56,8 @@ class RadarChart : View {
     private var data1 = arrayOf<Int>()
     private var data2 = arrayOf<Int>()
 
+    var typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -60,13 +73,6 @@ class RadarChart : View {
         palette = arrayOf(peakBlueColor, orangeColor, greenColor, purpleColor, blueColor, pinkColor)
     }
 
-    fun setData(axisLabels: Array<String>, data1: Array<Int>) {
-        this.axisLabels = axisLabels
-        this.data1 = data1
-        this.data2 = arrayOf<Int>()
-        invalidate()
-    }
-
     fun setData(axisLabels: Array<String>, data1: Array<Int>, data2: Array<Int>) {
         this.axisLabels = axisLabels
         this.data1 = data1
@@ -76,6 +82,9 @@ class RadarChart : View {
 
     override fun onDraw(canvas: Canvas?) {
         val c = canvas ?: return
+
+        //c.drawLine(0F, 0F, width.toFloat(), 0F, paint);
+        //c.drawLine(0F, 0F, 0F, height.toFloat(), paint);
 
         c.translate(width/2f, height/2f);
         drawCircles(c)
@@ -88,11 +97,12 @@ class RadarChart : View {
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = strokeWidth1
 
-        val h = outerCircleRadius / numberOfCircles
+        val h = canvas.outerCircleRadius / numberOfCircles
 
         for (i in 1..numberOfCircles) {
             if (i % 2 == 0) paint.color = whiteColor
             else paint.color = lightGreyColor
+            paint.alpha = lineAlpha
             canvas.drawCircle(0F, 0F, i * h, paint);
         }
     }
@@ -100,13 +110,14 @@ class RadarChart : View {
     private fun drawAxis(c: Canvas) {
         if (axisLabels.isEmpty()) return
 
-        val r = axisHeight
+        val r = c.axisHeight
         val circleH = r + axisCircleRadius
 
         for (i in 0 until axisLabels.size) {
             val x = getXUnitVector(i)
             val y = getYUnitVector(i)
             paint.color = whiteColor
+            paint.alpha = lineAlpha
             paint.strokeWidth = strokeWidth1
             c.drawLine(0F, 0F, r * x, r * y, paint);
 
@@ -119,21 +130,18 @@ class RadarChart : View {
         }
     }
 
+    private fun createStaticLayout(text: String, width: Int) =
+            StaticLayout(text, textPaint, width, Layout.Alignment.ALIGN_CENTER,
+                    1f, 1f, false)
+
     private fun drawText(c: Canvas, text: String, value: Int, x: Float, y: Float) {
-        val typeface = Typeface.createFromAsset(context.applicationContext.assets,
-                String.format(Locale.US,"fonts/%s", "GothamSSm-Light.ttf"))
-        val boldTypeface = Typeface.create(typeface, Typeface.BOLD)
-
         val labelWidth: Int = (((c.width - sideBorder)/2 - Math.abs(x)) * 2).toInt()
-
-        val labelLayout = StaticLayout(text, textPaint, labelWidth,
-                Layout.Alignment.ALIGN_CENTER, 1f, 1f, false)
-        val valueLayout = StaticLayout(value.toString(), textPaint, labelWidth,
-                Layout.Alignment.ALIGN_CENTER, 1f, 1f, false)
+        val labelLayout = createStaticLayout(text, labelWidth)
+        val valueLayout = createStaticLayout(value.toString(), labelWidth)
 
         val xBias: Float = (labelWidth/2).toFloat()
         val yBias: Float =
-                if (y <= 0) {
+                if (y <= 1) {
                     - axisCircleRadius - textHeight - valueLayout.height
                 }
                 else {
@@ -143,7 +151,8 @@ class RadarChart : View {
         //draw value
         c.save()
         c.translate(x - xBias, y + yBias)
-        textPaint.typeface = boldTypeface
+        textPaint.typeface = typeface.setBold()
+        textPaint.alpha = opaqueAlpha
         valueLayout.draw(c)
         c.restore()
 
@@ -151,6 +160,7 @@ class RadarChart : View {
         c.save()
         c.translate(x - xBias, y + yBias - labelLayout.height)
         textPaint.typeface = typeface
+        textPaint.alpha = textAlpha
         labelLayout.draw(c)
         c.restore()
     }
@@ -171,23 +181,23 @@ class RadarChart : View {
         paint.style = Paint.Style.FILL
         paint.alpha = polygonAlpha
 
-        val startX = getXUnitVector(0) * data[0].normalize()
-        val startY = getYUnitVector(0) * data[0].normalize()
+        val startX = getXUnitVector(0) * data[0].normalize(c.outerCircleRadius)
+        val startY = getYUnitVector(0) * data[0].normalize(c.outerCircleRadius)
 
         val path = Path()
         path.reset()
         path.moveTo(startX, startY)
 
         for (i in 1 until numberOfAxis) {
-            val x = getXUnitVector(i) * data[i].normalize()
-            val y = getYUnitVector(i) * data[i].normalize()
+            val x = getXUnitVector(i) * data[i].normalize(c.outerCircleRadius)
+            val y = getYUnitVector(i) * data[i].normalize(c.outerCircleRadius)
             path.lineTo(x, y)
         }
         path.lineTo(startX, startY)
         c.drawPath(path, paint)
     }
 
-    private fun Int.normalize(): Float = outerCircleRadius * this / 1000
+    private fun Int.normalize(outerCircleRadius: Float): Float = outerCircleRadius * this / units
 
     private fun getAngle(position: Int): Double =
         Math.toRadians((position * 360 / numberOfAxis - 90).toDouble())
