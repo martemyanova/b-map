@@ -12,36 +12,32 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
-import kotlin.math.roundToInt
 
 class RadarChart : View {
-    //private val outerCircleRadius = 110F.dpToPx()
     private val numberOfCircles = 10
-    private val strokeWidth1 = 2F
+    private val strokeWidth1 = 3F
     private val strokeWidth2 = 3F
-    //private val axisHeight = outerCircleRadius + 9F.dpToPx()
     private val axisCircleRadius = (11F / 2).dpToPx()
     private val paint = Paint()
     private val textPaint = TextPaint()
     private val textSize = 15F.spToPx()
     private val textHeight = 10F.dpToPx()
     private val sideBorder = 50F.dpToPx()
-    private val opaqueAlpha = 255
-    private val lineAlpha = (opaqueAlpha * 0.6).roundToInt()
-    private val textAlpha = (opaqueAlpha * 0.8).roundToInt()
-    private val polygonAlpha = (opaqueAlpha * 0.8).roundToInt()
     private val units = 1000
 
-    private val Canvas.radius: Int
+    private val Canvas.areaSize: Int
         get() = this.height / 2
     private val Canvas.outerCircleRadius: Float
-        get() = (this.radius * 0.60).toFloat()
+        get() = (this.areaSize * 0.60).toFloat()
     private val Canvas.axisHeight: Float
-        get() = (this.outerCircleRadius + this.radius * 0.06).toFloat()
+        get() = (this.outerCircleRadius + this.areaSize * 0.06).toFloat()
 
     private val lightGreyColor by lazy { ContextCompat.getColor(context, R.color.colorLightGrey) }
     private val whiteColor by lazy { ContextCompat.getColor(context, R.color.colorWhite) }
-    private val redColor by lazy { ContextCompat.getColor(context, R.color.colorRed) }
+    private val textColor by lazy { ContextCompat.getColor(context, R.color.colorText) }
+    private val lineColor by lazy { ContextCompat.getColor(context, R.color.colorLine) }
+    private val firstShapeColor by lazy { ContextCompat.getColor(context, R.color.colorFirstShape) }
+    private val secondShapeColor by lazy { ContextCompat.getColor(context, R.color.colorSecondShape) }
     private val peakBlueColor by lazy { ContextCompat.getColor(context, R.color.colorPeakBlue) }
     private val pinkColor by lazy { ContextCompat.getColor(context, R.color.colorPink) }
     private val greenColor by lazy { ContextCompat.getColor(context, R.color.colorGreen) }
@@ -50,9 +46,9 @@ class RadarChart : View {
     private val blueColor by lazy { ContextCompat.getColor(context, R.color.colorBlue) }
     private val palette: Array<Int>
 
-    private var axisLabels = arrayOf<String>()
+    private var axisLabelIds = arrayOf<Int>()
     private val numberOfAxis
-        get() = axisLabels.size
+        get() = axisLabelIds.size
     private var data1 = arrayOf<Int>()
     private var data2 = arrayOf<Int>()
 
@@ -73,8 +69,8 @@ class RadarChart : View {
         palette = arrayOf(peakBlueColor, orangeColor, greenColor, purpleColor, blueColor, pinkColor)
     }
 
-    fun setData(axisLabels: Array<String>, data1: Array<Int>, data2: Array<Int>) {
-        this.axisLabels = axisLabels
+    fun setData(axisLabelIds: Array<Int>, data1: Array<Int>, data2: Array<Int>) {
+        this.axisLabelIds = axisLabelIds
         this.data1 = data1
         this.data2 = data2
         invalidate()
@@ -82,9 +78,6 @@ class RadarChart : View {
 
     override fun onDraw(canvas: Canvas?) {
         val c = canvas ?: return
-
-        //c.drawLine(0F, 0F, width.toFloat(), 0F, paint);
-        //c.drawLine(0F, 0F, 0F, height.toFloat(), paint);
 
         c.translate(width/2f, height/2f);
         drawCircles(c)
@@ -100,24 +93,22 @@ class RadarChart : View {
         val h = canvas.outerCircleRadius / numberOfCircles
 
         for (i in 1..numberOfCircles) {
-            if (i % 2 == 0) paint.color = whiteColor
+            if (i % 2 == 0) paint.color = lineColor
             else paint.color = lightGreyColor
-            paint.alpha = lineAlpha
             canvas.drawCircle(0F, 0F, i * h, paint);
         }
     }
 
     private fun drawAxis(c: Canvas) {
-        if (axisLabels.isEmpty()) return
+        if (axisLabelIds.isEmpty()) return
 
         val r = c.axisHeight
         val circleH = r + axisCircleRadius
 
-        for (i in 0 until axisLabels.size) {
+        for (i in 0 until axisLabelIds.size) {
             val x = getXUnitVector(i)
             val y = getYUnitVector(i)
-            paint.color = whiteColor
-            paint.alpha = lineAlpha
+            paint.color = lineColor
             paint.strokeWidth = strokeWidth1
             c.drawLine(0F, 0F, r * x, r * y, paint);
 
@@ -126,9 +117,11 @@ class RadarChart : View {
             c.drawCircle(circleH * x, circleH * y, axisCircleRadius, paint);
 
             if (data1.isNotEmpty())
-                drawText(c, axisLabels[i], data1[i], circleH * x, circleH * y)
+                drawText(c, axisLabelIds[i].idToString(), data1[i], circleH * x, circleH * y)
         }
     }
+
+    private fun Int.idToString(): String = context.getString(this)
 
     private fun createStaticLayout(text: String, width: Int) =
             StaticLayout(text, textPaint, width, Layout.Alignment.ALIGN_CENTER,
@@ -152,7 +145,7 @@ class RadarChart : View {
         c.save()
         c.translate(x - xBias, y + yBias)
         textPaint.typeface = typeface.setBold()
-        textPaint.alpha = opaqueAlpha
+        textPaint.color = whiteColor
         valueLayout.draw(c)
         c.restore()
 
@@ -160,7 +153,7 @@ class RadarChart : View {
         c.save()
         c.translate(x - xBias, y + yBias - labelLayout.height)
         textPaint.typeface = typeface
-        textPaint.alpha = textAlpha
+        textPaint.color = textColor
         labelLayout.draw(c)
         c.restore()
     }
@@ -169,17 +162,16 @@ class RadarChart : View {
         if (data1.isEmpty()) return
 
         if (data2.isNotEmpty()) {
-            paint.color = redColor
+            paint.color = secondShapeColor
             drawPolygon(c, data2)
         }
 
-        paint.color = whiteColor
+        paint.color = firstShapeColor
         drawPolygon(c, data1)
     }
 
     private fun drawPolygon(c: Canvas, data:  Array<Int>) {
         paint.style = Paint.Style.FILL
-        paint.alpha = polygonAlpha
 
         val startX = getXUnitVector(0) * data[0].normalize(c.outerCircleRadius)
         val startY = getYUnitVector(0) * data[0].normalize(c.outerCircleRadius)

@@ -2,12 +2,18 @@ package com.martemyanova.brainmap
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.graphics.Typeface
-import android.support.v7.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.view.MenuItemCompat
+import android.support.v7.app.ActionBar
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.ShareActionProvider
+import android.view.Menu
 import android.widget.RadioButton
-import kotlinx.android.synthetic.main.activity_main.*
+import android.widget.TextView
 import com.martemyanova.brainmap.BrainMapViewModel.ChartMode.*
+import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        customizeActionBar()
 
         // set custom fonts
         titleText.typeface = mediumTypeface.setBold()
@@ -45,6 +53,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun customizeActionBar() {
+        val actionBar = supportActionBar ?: return
+
+        actionBar.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+        actionBar.setCustomView(R.layout.action_bar)
+        val actionBarCaption = findViewById<TextView>(R.id.actionBarCaption)
+        actionBarCaption.typeface = lightTypeface
+    }
+
     private fun subscribeToDataChanges() {
         brainMapViewModel.chartMode.observe(this, Observer { mode ->
             when (mode) {
@@ -64,4 +81,20 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        val item = menu.findItem(R.id.menu_item_share)
+        val shareActionProvider = MenuItemCompat.getActionProvider(item) as ShareActionProvider?
+        shareActionProvider?.setShareIntent(createShareIntent())
+
+        return true
+    }
+
+    private fun createShareIntent(): Intent =
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "My score.")
+            type = "text/plain"
+        }
 }

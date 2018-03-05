@@ -3,6 +3,7 @@
     <color name="colorPrimary">@color/colorBlack</color>
     <color name="colorPrimaryDark">@color/colorBlack</color>
     <color name="colorAccent">#FFFFFF</color>
+    <color name="colorText">#E6FFFFFF</color>
 
     <color name="colorPeakBlue">#00B8FC</color>
     <color name="colorPink">#FF2D55</color>
@@ -12,7 +13,10 @@
     <color name="colorBlue">#008AFF</color>
     <color name="colorBlack">#242424</color>
     <color name="colorGrey">#4A4A4A</color>
-    <color name="colorLightGrey">#8E8E93</color>
+    <color name="colorLightGrey">#998E8E93</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorRed">#FF3B30</color>
+
+    <color name="colorFirstShape">#CCFFFFFF</color>
+    <color name="colorSecondShape">#CCFF3B30</color>
+    <color name="colorLine">#99FFFFFF</color>
 </resources>

@@ -1,9 +1,18 @@
 <resources>
     <string name="app_name">BrainMap</string>
 
+    <string name="caption_action_bar">Your Performance</string>
     <string name="caption">YOUR PEAK BRAIN MAP&#8482;</string>
     <string name="text">Review and compare how you\'re\n performing in each brain skill category</string>
     <string name="btn_you">You</string>
     <string name="btn_age_group">Age Group</string>
     <string name="btn_profession">Profession</string>
+    <string name="share">Share</string>
+
+    <string name="cat_peak_brain_score">Peak Brain Score</string>
+    <string name="cat_memory">Memory</string>
+    <string name="cat_problem_solving">Problem Solving</string>
+    <string name="cat_language">Language</string>
+    <string name="cat_mental_agility">Mental Agility</string>
+    <string name="cat_focus">Focus</string>
 </resources>
